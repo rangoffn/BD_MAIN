@@ -1,0 +1,38 @@
+﻿@model List<BACKENDD.Models.Contact>
+
+@{
+    ViewData["Title"] = "Show Contacts";
+    // Подключаем файл стилей, который только для страницы ShowContacts
+            <link rel="stylesheet" href="~/css/showcontacts.css" />
+}
+
+<div class="table-container">
+    <h2>Сохраненные контакты</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Имя</th>
+            <th>Фамилия</th>
+            <th>Возраст</th>
+            <th>Почта</th>
+            <th>Сообщение</th>
+        </tr>
+    </thead>
+    <tbody>
+            @foreach (var contact in Model)
+            {
+                    <tr>
+                        <td>@contact.Name</td>
+                        <td>@contact.SecName</td>
+                        <td>@contact.Age</td>
+                        <td>@contact.Email</td>
+                        <td>@contact.Message</td>
+                    </tr>
+            }
+    </tbody>
+</table>
+</div>
+
+<form method="get" asp-controller="Home" asp-action="ShowContacts">
+    <input type="submit" value="Обновить данные" class="btn btn-primary" />
+</form>
