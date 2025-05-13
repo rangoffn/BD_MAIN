@@ -25,6 +25,13 @@ namespace BACKENDD.Controllers
             return View();
         }
 
+        [HttpGet("api/contacts")]
+        public IActionResult GetContactsApi()
+        {
+            var contacts = _contactService.GetAllContacts();
+            return Json(contacts); // явно возвращаем JSON
+        }
+
         // ќбработка формы и сохранение контакта
         [HttpPost]
         public async Task<IActionResult> Check(Contact contact)

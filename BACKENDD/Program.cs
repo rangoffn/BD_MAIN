@@ -16,6 +16,12 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+// После builder.Build()
+app.UseCors(policy => policy
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
+
 // Инициализация базы данных с начальными данными
 using (var scope = app.Services.CreateScope())
 {

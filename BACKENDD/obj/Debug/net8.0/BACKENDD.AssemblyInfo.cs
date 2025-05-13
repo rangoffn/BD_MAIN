@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BACKENDD")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+10db69cbb93d1a4df7814ac833642dafe5bd4fa4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5bf4ce50b5dc5c0e010a490c60c268d4279d039d")]
 [assembly: System.Reflection.AssemblyProductAttribute("BACKENDD")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BACKENDD")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
