@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BACKENDD.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250224050543_InitialCreate")]
+    [Migration("20250516003735_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -24,29 +24,37 @@ namespace BACKENDD.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("BACKENDD.Models.Contact", b =>
+            modelBuilder.Entity("BACKENDD.Models.User", b =>
                 {
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Age")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
-                    b.Property<string>("Message")
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("SecName")
+                    b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
-                    b.HasKey("Name");
+                    b.HasKey("Id");
 
-                    b.ToTable("Contacts");
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Username")
+                        .IsUnique();
+
+                    b.ToTable("Users");
                 });
 #pragma warning restore 612, 618
         }

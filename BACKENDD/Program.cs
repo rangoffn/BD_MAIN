@@ -1,43 +1,57 @@
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using BACKENDD.Models;
-using BACKENDD.Data; // для DbInitializer
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Добавление сервисов в контейнер
-builder.Services.AddScoped<IContactService, ContactService>();  // Регистрируем сервис
+// Добавление сервисов
+builder.Services.AddControllers();
 
-// Подключение к базе данных PostgreSQL через Entity Framework
+// Подключение к базе данных PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Добавление сервисов для работы с контроллерами и представлениями
-builder.Services.AddControllersWithViews();
+// Настройка аутентификации JWT
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+    });
+
+// Настройка CORS (разрешаем все запросы для разработки)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
 
-// После builder.Build()
-app.UseCors(policy => policy
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader());
-
-// Инициализация базы данных с начальными данными
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    DbInitializer.Initialize(context);  // Инициализация данных
-}
-
-// Настройка обработки запросов
+// Настройка конвейера запросов
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
 else
 {
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();  // Защищенный HTTP
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();
@@ -45,18 +59,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// Подключаем авторизацию, если требуется
+app.UseCors("AllowAll");
+
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "showcontacts",
-    pattern: "Contact/ShowContacts",
-    defaults: new { controller = "Contact", action = "ShowContacts" });
+app.MapControllers();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-
-// Запуск приложения
 app.Run();
